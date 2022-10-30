@@ -12,7 +12,7 @@ namespace TimedItemDestruction;
 public class TimedItemDestruction : BaseUnityPlugin
 {
 	private const string ModName = "Timed Item Destruction";
-	private const string ModVersion = "1.0.1";
+	private const string ModVersion = "1.0.2";
 	private const string ModGUID = "org.bepinex.plugins.timeditemdestruction";
 
 	private static readonly ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
