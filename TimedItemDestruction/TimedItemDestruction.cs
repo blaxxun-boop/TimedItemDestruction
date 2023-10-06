@@ -9,10 +9,11 @@ using ServerSync;
 namespace TimedItemDestruction;
 
 [BepInPlugin(ModGUID, ModName, ModVersion)]
+[BepInIncompatibility("org.bepinex.plugins.valheim_plus")]
 public class TimedItemDestruction : BaseUnityPlugin
 {
 	private const string ModName = "Timed Item Destruction";
-	private const string ModVersion = "1.0.2";
+	private const string ModVersion = "1.0.3";
 	private const string ModGUID = "org.bepinex.plugins.timeditemdestruction";
 
 	private static readonly ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
@@ -38,17 +39,17 @@ public class TimedItemDestruction : BaseUnityPlugin
 	private enum Toggle
 	{
 		On = 1,
-		Off = 0
+		Off = 0,
 	}
 
 	public void Awake()
 	{
 		serverConfigLocked = config("1 - General", "Lock Configuration", Toggle.Off, "If on, the configuration is locked and can be changed by server admins only.");
 		configSync.AddLockingConfigEntry(serverConfigLocked);
-		destructItemTimerWild = config("2 - Item Destruction", "Time in seconds until items are deleted in the wild", (int)ItemDrop.m_autoDestroyTimeout, "Specifies the amount of seconds that have to pass, before items on the floor in the wild are removed.");
+		destructItemTimerWild = config("2 - Item Destruction", "Time in seconds until items are deleted in the wild", (int)ItemDrop.c_AutoDestroyTimeout, "Specifies the amount of seconds that have to pass, before items on the floor in the wild are removed.");
 		destructTarItems = config("2 - Item Destruction", "Delete items in tar", Toggle.Off, "Deletes items stuck in tar for the specified time as well.");
 		destructBaseItems = config("2 - Item Destruction", "Delete items in bases", Toggle.Off, "Deletes items on the floor for the specified time in player bases as well.");
-		destructItemTimerBase = config("2 - Item Destruction", "Time in seconds until items are deleted in bases", (int)ItemDrop.m_autoDestroyTimeout, "Specifies the amount of seconds that have to pass, before items on the floor in player bases are removed.");
+		destructItemTimerBase = config("2 - Item Destruction", "Time in seconds until items are deleted in bases", (int)ItemDrop.c_AutoDestroyTimeout, "Specifies the amount of seconds that have to pass, before items on the floor in player bases are removed.");
 
 		Assembly assembly = Assembly.GetExecutingAssembly();
 		Harmony harmony = new(ModGUID);
@@ -69,7 +70,7 @@ public class TimedItemDestruction : BaseUnityPlugin
 
 			foreach (CodeInstruction instruction in instructions)
 			{
-				if (instruction.opcode == OpCodes.Ldc_R8 && instruction.OperandIs(ItemDrop.m_autoDestroyTimeout))
+				if (instruction.opcode == OpCodes.Ldc_R8 && instruction.OperandIs(ItemDrop.c_AutoDestroyTimeout))
 				{
 					yield return new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(Patch_ItemDrop_TimedDestruction), nameof(baseDestructionTime)));
 				}
